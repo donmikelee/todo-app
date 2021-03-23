@@ -3,6 +3,7 @@ import "./App.css";
 //Importing Components
 import Form from "./components/Form";
 import TodoList from "./components/TodoList";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
 
 function App() {
   //State stuff
@@ -47,21 +48,39 @@ function App() {
   };
   return (
     <div className="App">
-      <header>
-        <h1>Michał's Todo List</h1>
-      </header>
-      <Form
-        inputText={inputText}
-        todos={todos}
-        setTodos={setTodos}
-        setInputText={setInputText}
-        setStatus={setStatus}
-      ></Form>
-      <TodoList
-        filteredTodos={filteredTodos}
-        setTodos={setTodos}
-        todos={todos}
-      ></TodoList>
+      <DragDropContext
+        onDragEnd={(param) => {
+          const srcI = param.source.index;
+          const desI = param.destination?.index;
+          if (desI) {
+            todos.splice(desI, 0, todos.splice(srcI, 1)[0]);
+            localStorage.setItem("todos", JSON.stringify(todos));
+          }
+        }}
+      >
+        <header>
+          <h1>Michał's Todo List</h1>
+        </header>
+        <Form
+          inputText={inputText}
+          todos={todos}
+          setTodos={setTodos}
+          setInputText={setInputText}
+          setStatus={setStatus}
+        ></Form>
+        <Droppable droppableId="droppable-1">
+          {(provided, _) => (
+            <div ref={provided.innerRef} {...provided.droppableProps}>
+              <TodoList
+                filteredTodos={filteredTodos}
+                setTodos={setTodos}
+                todos={todos}
+              ></TodoList>
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     </div>
   );
 }
