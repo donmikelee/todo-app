@@ -51,7 +51,7 @@ function App() {
       <DragDropContext
         onDragEnd={(param) => {
           const srcI = param.source.index;
-          const desI = param.destination.index;
+          const desI = param.destination?.index;
           if (desI) {
             todos.splice(desI, 0, todos.splice(srcI, 1)[0]);
             localStorage.setItem("todos", JSON.stringify(todos));
